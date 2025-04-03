@@ -22,10 +22,10 @@ const db = new sqlite3.Database('./database.sqlite', (err) => {
 
     db.run(
       `CREATE TABLE IF NOT EXISTS users (
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
-      username TEXT NOT NULL UNIQUE,
-      password TEXT NOT NULL
-    )`,
+                                            id INTEGER PRIMARY KEY AUTOINCREMENT,
+                                            username TEXT NOT NULL UNIQUE,
+                                            password TEXT NOT NULL
+         )`,
       (err) => {
         if (err) {
           console.error('Błąd przy tworzeniu tabeli users:', err.message)
@@ -65,10 +65,10 @@ const db = new sqlite3.Database('./database.sqlite', (err) => {
 
     db.run(
       `CREATE TABLE IF NOT EXISTS components (
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
-      name TEXT NOT NULL,
-      quantity INTEGER NOT NULL DEFAULT 0
-    )`,
+                                                 id INTEGER PRIMARY KEY AUTOINCREMENT,
+                                                 name TEXT NOT NULL,
+                                                 quantity INTEGER NOT NULL DEFAULT 0
+         )`,
       (err) => {
         if (err) {
           console.error('Błąd przy tworzeniu tabeli components:', err.message)
@@ -93,6 +93,47 @@ function authenticateToken(req, res, next) {
     next()
   })
 }
+
+// Endpoint rejestracji użytkownika
+app.post('/register', (req, res) => {
+  const { username, password } = req.body
+  if (!username || !password) {
+    return res.status(400).json({ error: 'Username oraz password są wymagane' })
+  }
+
+  db.get('SELECT * FROM users WHERE username = ?', [username], (err, row) => {
+    if (err) {
+      console.error('Błąd przy sprawdzaniu użytkownika:', err.message)
+      return res.status(500).json({ error: 'Błąd serwera' })
+    }
+    if (row) {
+      return res.status(400).json({ error: 'Użytkownik już istnieje' })
+    }
+    bcrypt.hash(password, saltRounds, (err, hash) => {
+      if (err) {
+        console.error('Błąd przy haszowaniu hasła:', err.message)
+        return res.status(500).json({ error: 'Błąd serwera' })
+      }
+      db.run(
+        'INSERT INTO users (username, password) VALUES (?, ?)',
+        [username, hash],
+        function (err) {
+          if (err) {
+            console.error('Błąd przy dodawaniu użytkownika:', err.message)
+            return res.status(500).json({ error: 'Błąd serwera' })
+          }
+          res
+            .status(201)
+            .json({
+              message: 'Użytkownik został zarejestrowany',
+              id: this.lastID,
+              username,
+            })
+        },
+      )
+    })
+  })
+})
 
 app.post('/login', (req, res) => {
   const { username, password } = req.body
