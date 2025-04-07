@@ -1,9 +1,6 @@
-import { FC } from "react"
-const Home: FC = () => {
+import { JSX } from 'react'
+const Home: () => JSX.Element = () => {
+  return <h1>Strona główna</h1>
+}
 
-    return (
-        <h1>Home</h1>
-    );
-};
-
-export default Home;
+export default Home
