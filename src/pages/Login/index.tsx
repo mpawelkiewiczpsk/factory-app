@@ -17,9 +17,7 @@ const Login: React.FC = () => {
 
   const onFinish: FormProps<FieldType>['onFinish'] = (values: LoginData) => {
     login(values)
-      .then((data) => {
-        localStorage.setItem('accessToken', data.accessToken)
-        localStorage.setItem('refreshToken', data.refreshToken)
+      .then(() => {
         navigate('/')
       })
       .catch(() => {

@@ -13,3 +13,16 @@ export const login = (data: LoginData) => {
       }
     })
 }
+
+export const logout = () => {
+  return axiosInstance
+    .post('logout')
+    .then((resp) => {
+      return true
+    })
+    .catch((err) => {
+      return {
+        message: err,
+      }
+    })
+}

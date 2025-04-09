@@ -10,10 +10,11 @@ import {
   Products,
 } from './pages/index.tsx'
 import NotFound from './pages/NotFound'
+import Cookies from 'js-cookie'
 import './App.css'
 
 const PrivateRoute: React.FC<{ children: JSX.Element }> = ({ children }) => {
-  const accessToken = localStorage.getItem('accessToken')
+  const accessToken = Cookies.get('accessToken')
   return accessToken ? children : <Navigate to="/login" replace />
 }
 

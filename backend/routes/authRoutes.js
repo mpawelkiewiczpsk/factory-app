@@ -8,6 +8,7 @@ const db = require('../db/dbSetup')
 const REFRESH_SECRET_KEY = process.env.REFRESH_SECRET_KEY
 const SECRET_KEY = process.env.SECRET_KEY
 const SALT_ROUNDS = parseInt(process.env.SALT_ROUNDS, 10) || 10
+const FE_ADDRESS = process.env.FE_ADDRESS
 
 let refreshTokens = []
 
@@ -71,13 +72,15 @@ router.post('/login', (req, res) => {
       }
 
       const payload = { username: user.username }
-      const accessToken = jwt.sign(payload, SECRET_KEY, { expiresIn: '15m' })
+      const accessToken = jwt.sign(payload, SECRET_KEY, { expiresIn: '1m' })
       const refreshToken = jwt.sign(payload, REFRESH_SECRET_KEY, {
         expiresIn: '1h',
       })
       refreshTokens.push(refreshToken)
 
-      res.json({ accessToken, refreshToken })
+      res.cookie('accessToken', `Bearer ${accessToken}`)
+      res.cookie('refreshToken', `Bearer ${refreshToken}`)
+      res.sendStatus(200)
     })
   })
 })
@@ -98,21 +101,33 @@ router.get(
       id: req.user.id,
       email: req.user.emails ? req.user.emails[0].value : null,
     }
-    const token = jwt.sign(payload, SECRET_KEY, { expiresIn: '1h' })
-    res.redirect('http://localhost:5173')
+    const accessToken = jwt.sign(payload, SECRET_KEY, { expiresIn: '1m' })
+    const refreshToken = jwt.sign(payload, REFRESH_SECRET_KEY, {
+      expiresIn: '1h',
+    })
+    refreshTokens.push(refreshToken)
+
+    res.cookie('accessToken', `Bearer ${accessToken}`)
+    res.cookie('refreshToken', `Bearer ${refreshToken}`)
+    res.redirect(FE_ADDRESS)
   },
 )
 
 router.post('/refresh', (req, res) => {
-  const { token } = req.body
+  const authHeader = req.cookies.refreshToken
+  const token = authHeader && authHeader.split(' ')[1]
   if (!token) return res.sendStatus(401)
   if (!refreshTokens.includes(token)) return res.sendStatus(403)
 
   jwt.verify(token, REFRESH_SECRET_KEY, (err, user) => {
-    if (err) return res.sendStatus(403)
+    if (err) {
+      res.clearCookie('accessToken')
+      res.clearCookie('refreshToken')
+      return res.sendStatus(403)
+    }
 
     const payload = { username: user.username }
-    const accessToken = jwt.sign(payload, SECRET_KEY, { expiresIn: '15m' })
+    const accessToken = jwt.sign(payload, SECRET_KEY, { expiresIn: '1m' })
     const refreshToken = jwt.sign(payload, REFRESH_SECRET_KEY, {
       expiresIn: '1h',
     })
@@ -120,13 +135,18 @@ router.post('/refresh', (req, res) => {
     refreshTokens = refreshTokens.filter((rt) => rt !== token)
     refreshTokens.push(refreshToken)
 
-    res.json({ accessToken, refreshToken })
+    res.cookie('accessToken', `Bearer ${accessToken}`)
+    res.cookie('refreshToken', `Bearer ${refreshToken}`)
+
+    res.sendStatus(201)
   })
 })
 
 router.post('/logout', (req, res) => {
-  const { token } = req.body
+  const token = req.cookies.accessToken
   refreshTokens = refreshTokens.filter((rt) => rt !== token)
+  res.clearCookie('accessToken')
+  res.clearCookie('refreshToken')
   res.sendStatus(204)
 })
 

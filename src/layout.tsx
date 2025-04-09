@@ -11,6 +11,7 @@ import {
 } from '@ant-design/icons'
 import { Outlet, Link } from 'react-router-dom'
 import { Button, Layout, Menu, theme } from 'antd'
+import { logout } from './api/auth.ts'
 
 const { Header, Sider, Content } = Layout
 
@@ -21,9 +22,9 @@ const LayoutApp: React.FC = () => {
   } = theme.useToken()
 
   const handleLogout = () => {
-    localStorage.removeItem('accessToken')
-    localStorage.removeItem('refreshToken')
-    window.location.href = '/login'
+    logout().then(() => {
+      window.location.href = '/login'
+    })
   }
 
   return (
