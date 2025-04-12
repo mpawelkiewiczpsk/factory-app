@@ -95,7 +95,10 @@ router.get(
 
 router.get(
   '/auth/google/callback',
-  passport.authenticate('google', { session: false }),
+  passport.authenticate('google', {
+    session: false,
+    failureRedirect: `${FE_ADDRESS}/errorPage`,
+  }),
   (req, res) => {
     const payload = {
       id: req.user.id,
@@ -107,7 +110,7 @@ router.get(
     })
     refreshTokens.push(refreshToken)
 
-    res.cookie('accessToken', `Bearer ${accessToken}`)
+    res.cookie('accessToken', `Bearer ${accessToken}`, {})
     res.cookie('refreshToken', `Bearer ${refreshToken}`)
     res.redirect(FE_ADDRESS)
   },

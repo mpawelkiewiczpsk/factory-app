@@ -10,6 +10,7 @@ const passport = require('./config/passport')
 
 const authRoutes = require('./routes/authRoutes')
 const componentsRoutes = require('./routes/componentsRoutes')
+const paymentsRoutes = require('./routes/paymentsRoutes')
 
 app.use(
   cors({
@@ -17,12 +18,14 @@ app.use(
     credentials: true,
   }),
 )
+app.use(express.urlencoded({ extended: true }))
 app.use(express.json())
 app.use(passport.initialize())
 app.use(cookieParser())
 
 app.use('/', authRoutes)
 app.use('/components', componentsRoutes)
+app.use('/payment', paymentsRoutes)
 
 app.listen(PORT, () => {
   console.log(`Serwer działa na porcie ${PORT}`)
