@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testExecutions version="1">
+  <file path="src\tests\pages\Home\Home.test.tsx">
+    <testCase name="Home - renders header and all cards with correct titles and values" duration="231" />
+  </file>
+  <file path="src\tests\pages\Products\Products.test.tsx">
+    <testCase name="Products - renders table with correct headers" duration="311" />
+    <testCase name="Products - renders correct number of rows" duration="141" />
+    <testCase name="Products - renders specific product row correctly" duration="113" />
+  </file>
+</testExecutions>

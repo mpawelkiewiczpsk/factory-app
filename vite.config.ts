@@ -13,4 +13,26 @@ export default defineConfig({
       },
     },
   },
+  test: {
+    environment: 'jsdom',
+    globals: true,
+    setupFiles: './src/setupTests.ts',
+    include: ['**/*.test.{ts,tsx}'],
+    reporters: [
+      'default',
+      'junit',
+      [
+        'vitest-sonar-reporter',
+        {
+          outputFile: 'coverage/sonar-report.xml',
+        },
+      ],
+    ],
+    coverage: {
+      provider: 'istanbul',
+      reporter: ['text', 'json-summary', 'lcov'],
+      reportsDirectory: 'coverage',
+      include: ['src/**/*.{js,jsx,ts,tsx}'],
+    },
+  },
 })

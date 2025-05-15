@@ -42,29 +42,29 @@ const LayoutApp: React.FC = () => {
           defaultSelectedKeys={['1']}
           items={[
             {
-              key: '1',
+              key: 'home',
               icon: <HomeOutlined />,
               label: <Link to="/">Strona Główna</Link>,
             },
             {
-              key: '2',
+              key: 'products',
+              icon: <UnorderedListOutlined />,
+              label: <Link to="/products">Produkty</Link>,
+            },
+            {
+              key: 'components',
               icon: <OrderedListOutlined />,
               label: <Link to="/components">Komponenty</Link>,
             },
             {
-              key: '3',
+              key: 'orders',
               icon: <UploadOutlined />,
               label: <Link to="/orders">Zamówienia</Link>,
             },
             {
-              key: '4',
+              key: 'delivers',
               icon: <UserOutlined />,
               label: <Link to="/contractors">Dostawcy</Link>,
-            },
-            {
-              key: '5',
-              icon: <UnorderedListOutlined />,
-              label: <Link to="/products">Produkty</Link>,
             },
           ]}
         />

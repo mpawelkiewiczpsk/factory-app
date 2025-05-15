@@ -4,6 +4,7 @@ const jwt = require('jsonwebtoken')
 const bcrypt = require('bcrypt')
 const passport = require('passport')
 const db = require('../db/dbSetup')
+const { authenticateToken } = require('../middlewares/authMiddleware')
 
 const REFRESH_SECRET_KEY = process.env.REFRESH_SECRET_KEY
 const SECRET_KEY = process.env.SECRET_KEY
@@ -97,7 +98,7 @@ router.get(
   '/auth/google/callback',
   passport.authenticate('google', {
     session: false,
-    failureRedirect: `${FE_ADDRESS}/errorPage`,
+    failureRedirect: `${FE_ADDRESS}/login?errorGoogleLogin=true`,
   }),
   (req, res) => {
     const payload = {
@@ -110,8 +111,8 @@ router.get(
     })
     refreshTokens.push(refreshToken)
 
-    res.cookie('accessToken', `Bearer ${accessToken}`, {})
-    res.cookie('refreshToken', `Bearer ${refreshToken}`)
+    res.cookie('accessToken', `Bearer ${accessToken}`, { httpOnly: true })
+    res.cookie('refreshToken', `Bearer ${refreshToken}`, { httpOnly: true })
     res.redirect(FE_ADDRESS)
   },
 )
@@ -143,6 +144,10 @@ router.post('/refresh', (req, res) => {
 
     res.sendStatus(201)
   })
+})
+
+router.get('/isLogged', authenticateToken, (req, res) => {
+  res.status(200)
 })
 
 router.post('/logout', (req, res) => {

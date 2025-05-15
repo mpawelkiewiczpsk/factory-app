@@ -1,6 +1,6 @@
 import { JSX } from 'react'
-const Products: () => JSX.Element = () => {
-  return <h1>Produkty</h1>
+const ErrorPage: () => JSX.Element = () => {
+  return <h1>Logowanie za pomocą google się nie powiodło</h1>
 }
 
-export default Products
+export default ErrorPage

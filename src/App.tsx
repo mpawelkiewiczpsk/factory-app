@@ -8,14 +8,20 @@ import {
   Components,
   Contractors,
   Products,
+  ErrorPage,
 } from './pages/index.tsx'
+import { isLogged } from './api/auth.ts'
 import NotFound from './pages/NotFound'
-import Cookies from 'js-cookie'
 import './App.css'
 
 const PrivateRoute: React.FC<{ children: JSX.Element }> = ({ children }) => {
-  const accessToken = Cookies.get('accessToken')
-  return accessToken ? children : <Navigate to="/login" replace />
+  // isLogged().then((data) => {
+  //   console.log(data)
+  // })
+
+  // return accessToken ? children : <Navigate to="/login" replace />
+
+  return children
 }
 
 const App: React.FC = () => {
@@ -23,6 +29,7 @@ const App: React.FC = () => {
     <BrowserRouter>
       <Routes>
         <Route path="/login" element={<Login />} />
+        <Route path="/errorPage" element={<ErrorPage />} />
         <Route
           element={
             <PrivateRoute>

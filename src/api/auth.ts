@@ -14,6 +14,19 @@ export const login = (data: LoginData) => {
     })
 }
 
+export const isLogged = () => {
+  return axiosInstance
+    .get('isLogged')
+    .then((resp) => {
+      return true
+    })
+    .catch((err) => {
+      return {
+        message: err,
+      }
+    })
+}
+
 export const logout = () => {
   return axiosInstance
     .post('logout')
